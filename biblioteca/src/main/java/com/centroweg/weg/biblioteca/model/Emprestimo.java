@@ -5,38 +5,31 @@ import java.time.LocalDate;
 public class Emprestimo {
 
     private int id;
-    private int idLivro;
-    private int idUsuario;
+    private int livro_id;
+    private int usuario_id;
     private LocalDate data_emprestimo;
     private LocalDate data_devolucao;
 
 
-    public Emprestimo(int id, int idLivro, int idUsuario, LocalDate data_emprestimo, LocalDate data_devolucao) {
+    public Emprestimo() {}
+
+    public Emprestimo(int id, int livro_id, int usuario_id, LocalDate data_emprestimo, LocalDate data_devolucao) {
         this.id = id;
-        this.idLivro = idLivro;
-        this.idUsuario = idUsuario;
+        this.livro_id = livro_id;
+        this.usuario_id = usuario_id;
         this.data_emprestimo = data_emprestimo;
         this.data_devolucao = data_devolucao;
     }
 
-    public Emprestimo(int idLivro, int idUsuario, LocalDate data_emprestimo, LocalDate data_devolucao) {
-        this.idLivro = idLivro;
-        this.idUsuario = idUsuario;
+    public Emprestimo(int livro_id, int usuario_id, LocalDate data_emprestimo, LocalDate data_devolucao) {
+        this.livro_id = livro_id;
+        this.usuario_id = usuario_id;
         this.data_emprestimo = data_emprestimo;
         this.data_devolucao = data_devolucao;
     }
 
-    public Emprestimo(int id, int idLivro, int idUsuario, LocalDate data_emprestimo) {
-        this.id = id;
-        this.idLivro = idLivro;
-        this.idUsuario = idUsuario;
-        this.data_emprestimo = data_emprestimo;
-    }
-
-    public Emprestimo(int idLivro, int idUsuario, LocalDate data_emprestimo) {
-        this.idLivro = idLivro;
-        this.idUsuario = idUsuario;
-        this.data_emprestimo = data_emprestimo;
+    public Emprestimo(LocalDate data_devolucao) {
+        this.data_devolucao = data_devolucao;
     }
 
     public int getId() {
@@ -47,20 +40,20 @@ public class Emprestimo {
         this.id = id;
     }
 
-    public int getIdLivro() {
-        return idLivro;
+    public int getLivro_id() {
+        return livro_id;
     }
 
-    public void setIdLivro(int idLivro) {
-        this.idLivro = idLivro;
+    public void setLivro_id(int livro_id) {
+        this.livro_id = livro_id;
     }
 
-    public int getIdUsuario() {
-        return idUsuario;
+    public int getUsuario_id() {
+        return usuario_id;
     }
 
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setUsuarioId(int usuario_id) {
+        this.usuario_id = usuario_id;
     }
 
     public LocalDate getData_emprestimo() {
