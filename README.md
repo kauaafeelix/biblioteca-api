@@ -18,7 +18,7 @@
   <a href="#-contribuindo">Contribuindo</a>
 </p>
 
-![Biblioteca Banner](https://img.shields.io/badge/STATUS-EM%20DESENVOLVIMENTO-yellow?style=for-the-badge)
+![Biblioteca Banner](https://img.shields.io/badge/STATUS-%20FINALIZADO-green?style=for-the-badge)
 
 </div>
 
