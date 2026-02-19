@@ -25,8 +25,8 @@ public class EmprestimoRepository {
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
-            ps.setInt(1, emprestimo.getIdLivro());
-            ps.setInt(2, emprestimo.getIdUsuario());
+            ps.setInt(1, emprestimo.getLivro_id());
+            ps.setInt(2, emprestimo.getUsuario_id());
             ps.setObject(3, emprestimo.getData_emprestimo());
             ps.executeUpdate();
 
@@ -47,12 +47,14 @@ public class EmprestimoRepository {
         List<Emprestimo> emprestimos = new ArrayList<>();
 
         String sql = """
-                SELECT 
-                livro_id,
-                usuario_id,
-                data_emprestimo 
-                FROM emprestimo
-                """;
+            SELECT
+            id,
+            livro_id,
+            usuario_id,
+            data_emprestimo,
+            data_devolucao
+            FROM emprestimo e
+            """;
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)){
@@ -61,9 +63,11 @@ public class EmprestimoRepository {
 
             while (rs.next()){
                 Emprestimo emprestimo = new Emprestimo(
+                        rs.getInt("id"),
                         rs.getInt("livro_id"),
                         rs.getInt("usuario_id"),
-                        rs.getObject("data_emprestimo", LocalDate.class)
+                        rs.getObject("data_emprestimo", LocalDate.class),
+                        rs.getObject("data_devolucao", LocalDate.class)
                 );
                 emprestimos.add(emprestimo);
             }
@@ -71,34 +75,73 @@ public class EmprestimoRepository {
         return emprestimos;
     }
 
-    public Emprestimo buscarEmprestimoPorId(int id) throws SQLException{
+
+
+    public List<Emprestimo> listarEmprestimosPorIdUsuario(int usuarioId)throws SQLException{
+
+        List<Emprestimo> emprestimos = new ArrayList<>();
 
         String sql = """
-                SELECT 
-                id,
-                livro_id,
-                usuario_id,
-                data_emprestimo
-                FROM emprestimo
-                WHERE id = ?
-                """;
+            SELECT
+            e.id,
+            e.livro_id,
+            e.usuario_id,
+            e.data_emprestimo,
+            e.data_devolucao
+        FROM emprestimo e
+        WHERE e.usuario_id = ?
+            """;
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setInt(1, id);
+            ps.setInt(1, usuarioId);
 
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()){
-                int idBanco = rs.getInt("id");
-                int livroId = rs.getInt("livro_id");
-                int usuarioId = rs.getInt("usuario_id");
-                java.time.LocalDate dataEmprestimo = rs.getObject("data_emprestimo", java.time.LocalDate.class);
-
-                return new Emprestimo(idBanco, livroId, usuarioId, dataEmprestimo);
+            while (rs.next()){
+                Emprestimo emprestimo = new Emprestimo(
+                        rs.getInt("id"),
+                        rs.getInt("livro_id"),
+                        rs.getInt("usuario_id"),
+                        rs.getObject("data_emprestimo", LocalDate.class),
+                        rs.getObject("data_devolucao", LocalDate.class)
+                );
+                emprestimos.add(emprestimo);
             }
         }
-        throw new RuntimeException("O emprestimo não foi encontrado ou não existe.");
+        return emprestimos;
+    }
+
+
+    public Emprestimo buscarEmprestimoPorId(int id) throws SQLException{
+
+        String sql = """
+            SELECT
+            e.id,
+            e.livro_id,
+            e.usuario_id,
+            e.data_emprestimo,
+            e.data_devolucao
+            FROM emprestimo e
+            """;
+
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)){
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()){
+                Emprestimo emprestimo = new Emprestimo(
+                        rs.getInt("id"),
+                        rs.getInt("livro_id"),
+                        rs.getInt("usuario_id"),
+                        rs.getObject("data_emprestimo", LocalDate.class),
+                        rs.getObject("data_devolucao", LocalDate.class)
+                );
+                return emprestimo;
+            }
+        }
+        throw new RuntimeException("O empréstimo não foi encontrado ou não existe.");
     }
 
     public void atualizarEmprestimo (Emprestimo emprestimo) throws SQLException{
@@ -113,8 +156,8 @@ public class EmprestimoRepository {
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)){
-            ps.setInt(1, emprestimo.getIdLivro());
-            ps.setInt(2, emprestimo.getIdUsuario());
+            ps.setInt(1, emprestimo.getLivro_id());
+            ps.setInt(2, emprestimo.getUsuario_id());
             ps.setObject(3, emprestimo.getData_emprestimo());
             ps.setInt(4, emprestimo.getId());
             ps.executeUpdate();
@@ -145,10 +188,31 @@ public class EmprestimoRepository {
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setObject(1, dataDevolucao);
+            ps.setDate(1, Date.valueOf(dataDevolucao));
             ps.setInt(2, idEmprestimo);
             ps.executeUpdate();
         }
     }
+
+    public boolean livroEstaEmprestado(int livroId) throws SQLException {
+        String sql = """
+            SELECT COUNT(*) AS total
+            FROM emprestimo
+            WHERE livro_id = ? AND data_devolucao IS NULL
+            """;
+
+        try (Connection conn = Conexao.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, livroId);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt("total") > 0;
+            }
+        }
+        return false;
+    }
+
 
 }
