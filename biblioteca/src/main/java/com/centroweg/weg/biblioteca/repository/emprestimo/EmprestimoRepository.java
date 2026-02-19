@@ -2,12 +2,14 @@ package com.centroweg.weg.biblioteca.repository.emprestimo;
 
 import com.centroweg.weg.biblioteca.model.Emprestimo;
 import com.centroweg.weg.biblioteca.utils.Conexao;
+import org.springframework.stereotype.Repository;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EmprestimoRepository {
 
     public Emprestimo salvarEmprestimo (Emprestimo emprestimo) throws SQLException {
