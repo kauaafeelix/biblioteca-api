@@ -33,6 +33,12 @@ public class Emprestimo {
         this.data_emprestimo = data_emprestimo;
     }
 
+    public Emprestimo(int idLivro, int idUsuario, LocalDate data_emprestimo) {
+        this.idLivro = idLivro;
+        this.idUsuario = idUsuario;
+        this.data_emprestimo = data_emprestimo;
+    }
+
     public int getId() {
         return id;
     }
