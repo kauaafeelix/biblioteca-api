@@ -26,7 +26,7 @@ public class LivroRepository {
 
             ps.setString(1, livro.getTitulo());
             ps.setString(2, livro.getAutor());
-            ps.setInt(3, livro.getAnoPublicacao());
+            ps.setInt(3, livro.getAno_publicacao());
             ps.executeUpdate();
 
             ResultSet rs = ps.getGeneratedKeys();
@@ -105,22 +105,23 @@ public class LivroRepository {
     public void atualizarLivro (Livro livro) throws SQLException{
 
         String sql = """
-                UPDATE livro
-                SET titulo = ?
-                    autor = ?
-                    ano_publicacao = ?
-                WHERE id = ?
-                """;
+            UPDATE livro
+            SET titulo = ?,
+                autor = ?,
+                ano_publicacao = ?
+            WHERE id = ?
+            """;
 
         try (Connection conn = Conexao.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)){
             ps.setString(1, livro.getTitulo());
             ps.setString(2, livro.getAutor());
-            ps.setInt(3, livro.getAnoPublicacao());
+            ps.setInt(3, livro.getAno_publicacao());
             ps.setInt(4, livro.getId());
             ps.executeUpdate();
         }
     }
+
 
     public void deleteLivro (int id) throws SQLException{
         String sql = """
