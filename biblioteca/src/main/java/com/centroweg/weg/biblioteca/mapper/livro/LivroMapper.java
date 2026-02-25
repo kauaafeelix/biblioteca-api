@@ -13,7 +13,7 @@ public class LivroMapper {
         return new Livro(
                 livroRequestDto.titulo(),
                 livroRequestDto.autor(),
-                livroRequestDto.anoPublicacao()
+                livroRequestDto.ano_publicacao()
         );
     }
 
