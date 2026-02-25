@@ -4,6 +4,6 @@ public record LivroResponseDto(
         int id,
         String titulo,
         String autor,
-        int anoPublicacao
+        int ano_publicacao
 ) {
 }
