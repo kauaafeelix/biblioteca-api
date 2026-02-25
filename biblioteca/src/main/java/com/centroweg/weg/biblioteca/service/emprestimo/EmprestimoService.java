@@ -1,6 +1,10 @@
 package com.centroweg.weg.biblioteca.service.emprestimo;
 
+import com.centroweg.weg.biblioteca.dto.emprestimo.EmprestimoRequestDto;
+import com.centroweg.weg.biblioteca.dto.emprestimo.EmprestimoResponseDto;
+import com.centroweg.weg.biblioteca.mapper.emprestimo.EmprestimoMapper;
 import com.centroweg.weg.biblioteca.model.Emprestimo;
+import com.centroweg.weg.biblioteca.model.Usuario;
 import com.centroweg.weg.biblioteca.repository.emprestimo.EmprestimoRepository;
 import com.centroweg.weg.biblioteca.repository.livro.LivroRepository;
 import com.centroweg.weg.biblioteca.repository.usuario.UsuarioRepository;
@@ -13,18 +17,27 @@ import java.util.List;
 @Service
 public class EmprestimoService {
 
-    private EmprestimoRepository emprestimoRepository;
-    private LivroRepository livroRepository;
-    private UsuarioRepository usuarioRepository;
+    private final EmprestimoRepository emprestimoRepository;
+    private final LivroRepository livroRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final EmprestimoMapper mapper;
 
 
-    public EmprestimoService (EmprestimoRepository emprestimoRepository, LivroRepository livroRepository, UsuarioRepository usuarioRepository){
+    public EmprestimoService (
+            EmprestimoRepository emprestimoRepository,
+            LivroRepository livroRepository,
+            UsuarioRepository usuarioRepository,
+            EmprestimoMapper mapper
+    ){
         this.usuarioRepository = usuarioRepository;
         this.livroRepository = livroRepository;
         this.emprestimoRepository = emprestimoRepository;
+        this.mapper = mapper;
     }
 
-    public Emprestimo salvar(Emprestimo emprestimo) throws SQLException {
+    public EmprestimoResponseDto salvar(EmprestimoRequestDto emprestimoRequestDto) throws SQLException {
+
+        Emprestimo emprestimo = mapper.toEntity(emprestimoRequestDto);
 
         try {
             livroRepository.buscarLivroPorId(emprestimo.getLivro_id());
@@ -42,23 +55,41 @@ public class EmprestimoService {
             throw new RuntimeException("Este livro já está emprestado e não foi devolvido ainda.");
         }
 
-        return emprestimoRepository.salvarEmprestimo(emprestimo);
+        emprestimoRepository.salvarEmprestimo(emprestimo);
+
+        return mapper.toDto(emprestimo);
+
     }
 
 
-    public List<Emprestimo> listar() throws SQLException{
-        return emprestimoRepository.listarEmprestimos();
+    public List<EmprestimoResponseDto> listar() throws SQLException{
+        return emprestimoRepository
+                .listarEmprestimos()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
-    public Emprestimo buscarPorId(int id) throws SQLException{
-        return emprestimoRepository.buscarEmprestimoPorId(id);
+    public EmprestimoResponseDto buscarPorId(int id) throws SQLException{
+
+        Emprestimo emprestimo = emprestimoRepository.buscarEmprestimoPorId(id);
+        return mapper.toDto(emprestimo);
     }
 
-    public Emprestimo atualizar(Emprestimo emprestimo, int id) throws SQLException{
+    public EmprestimoResponseDto atualizar(EmprestimoRequestDto emprestimoRequestDto, int id) throws SQLException{
 
-        emprestimo.setId(id);
-        emprestimoRepository.atualizarEmprestimo(emprestimo);
-        return emprestimo;
+        Emprestimo emprestimoEncontrado = emprestimoRepository.buscarEmprestimoPorId(id);
+
+        if (emprestimoEncontrado == null){
+            throw new IllegalArgumentException("Nenhum emprestimo foi encontrado.");
+        }
+
+        emprestimoEncontrado.setLivro_id(emprestimoRequestDto.livro_id());
+        emprestimoEncontrado.setUsuarioId(emprestimoRequestDto.livro_id());
+        emprestimoEncontrado.setData_emprestimo(emprestimoRequestDto.data_emprestimo());
+        emprestimoEncontrado.setData_devolucao(emprestimoRequestDto.data_devolucao());
+
+        return mapper.toDto(emprestimoEncontrado);
     }
 
     public void deletar(int id) throws SQLException{
@@ -77,7 +108,11 @@ public class EmprestimoService {
         emprestimoRepository.registrarDevolucao(id, devolucao);
     }
 
-    public List<Emprestimo> listarPorUsuario(int id_usuario) throws SQLException{
-        return emprestimoRepository.listarEmprestimosPorIdUsuario(id_usuario);
+    public List<EmprestimoResponseDto> listarPorUsuario(int id_usuario) throws SQLException{
+
+        return emprestimoRepository.listarEmprestimosPorIdUsuario(id_usuario)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 }
