@@ -1,5 +1,7 @@
 package com.centroweg.weg.biblioteca.controller.usuario;
 
+import com.centroweg.weg.biblioteca.dto.usuario.UsuarioRequestDto;
+import com.centroweg.weg.biblioteca.dto.usuario.UsuarioResponseDto;
 import com.centroweg.weg.biblioteca.model.Usuario;
 import com.centroweg.weg.biblioteca.service.usuario.UsuarioService;
 import org.springframework.web.bind.annotation.*;
@@ -18,16 +20,16 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public Usuario save (@RequestBody Usuario usuario){
+    public UsuarioResponseDto save (@RequestBody UsuarioRequestDto usuarioRequestDto){
         try{
-            return service.salvar(usuario);
+            return service.salvar(usuarioRequestDto);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @GetMapping
-    public List<Usuario> findAll(){
+    public List<UsuarioResponseDto> findAll(){
         try{
             return service.listar();
         } catch (SQLException e) {
@@ -36,7 +38,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public Usuario findById (@PathVariable int id) {
+    public UsuarioResponseDto findById (@PathVariable int id) {
         try {
             return service.buscarPorId(id);
         } catch (SQLException e) {
@@ -45,9 +47,9 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public Usuario updateUsuario(@PathVariable int id, @RequestBody Usuario usuario){
+    public UsuarioResponseDto updateUsuario(@PathVariable int id, @RequestBody UsuarioRequestDto usuarioRequestDto){
         try{
-            return service.atualizar(usuario, id);
+            return service.atualizar(usuarioRequestDto, id);
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar o usuário com ID: "+id+ " || "+e.getMessage());
         }
