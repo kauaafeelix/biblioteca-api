@@ -1,5 +1,7 @@
 package com.centroweg.weg.biblioteca.controller.emprestimo;
 
+import com.centroweg.weg.biblioteca.dto.emprestimo.EmprestimoRequestDto;
+import com.centroweg.weg.biblioteca.dto.emprestimo.EmprestimoResponseDto;
 import com.centroweg.weg.biblioteca.model.Emprestimo;
 import com.centroweg.weg.biblioteca.service.emprestimo.EmprestimoService;
 import org.springframework.http.HttpStatus;
@@ -21,16 +23,18 @@ public class EmprestimoController {
     }
 
     @PostMapping
-    public Emprestimo save (@RequestBody Emprestimo emprestimo){
+    public EmprestimoResponseDto save (@RequestBody EmprestimoRequestDto emprestimoRequestDto){
         try{
-            return service.salvar(emprestimo);
+            return service.salvar(
+                    emprestimoRequestDto
+            );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @GetMapping
-    public List<Emprestimo> findAll(){
+    public List<EmprestimoResponseDto> findAll(){
         try{
             return service.listar();
         } catch (SQLException e) {
@@ -39,18 +43,22 @@ public class EmprestimoController {
     }
 
     @GetMapping("/{id}")
-    public Emprestimo findById (@PathVariable int id) {
+    public EmprestimoResponseDto findById (@PathVariable int id) {
         try {
-            return service.buscarPorId(id);
+            return service.buscarPorId(
+                    id
+            );
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @GetMapping("/{usuarioId}/usuario")
-    public List<Emprestimo> listarPorUsuario(@PathVariable int usuarioId) {
+    public List<EmprestimoResponseDto> listarPorUsuario(@PathVariable int usuarioId) {
         try {
-            return service.listarPorUsuario(usuarioId);
+            return service.listarPorUsuario(
+                    usuarioId
+            );
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao listar os empréstimos do usuário com ID: " + usuarioId + " || " + e.getMessage());
         }
@@ -58,18 +66,24 @@ public class EmprestimoController {
     }
 
     @PutMapping("/{id}")
-    public Emprestimo updateEmprestimo(@PathVariable int id, @RequestBody Emprestimo emprestimo){
+    public EmprestimoResponseDto updateEmprestimo(@PathVariable int id, @RequestBody EmprestimoRequestDto emprestimoRequestDto){
         try{
-            return service.atualizar(emprestimo, id);
+            return service.atualizar(
+                    emprestimoRequestDto,
+                    id
+            );
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar o empréstimo com ID: "+id+ " || "+e.getMessage());
         }
     }
 
     @PutMapping ("/devolucao/{id}")
-    public void devolver(@PathVariable int id, @RequestBody Emprestimo emprestimo){
+    public void devolver(@PathVariable int id, @RequestBody EmprestimoRequestDto emprestimoRequestDto){
         try{
-            service.devolver(id, emprestimo.getData_devolucao());
+            service.devolver(
+                    id,
+                    emprestimoRequestDto.data_devolucao()
+            );
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao devolver o empréstimo com ID: "+id+ " || "+e.getMessage());
         }
@@ -78,7 +92,9 @@ public class EmprestimoController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable int id){
         try{
-            service.deletar(id);
+            service.deletar(
+                    id
+            );
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar o empréstimo com ID: "+id+ " || "+e.getMessage());
         }
