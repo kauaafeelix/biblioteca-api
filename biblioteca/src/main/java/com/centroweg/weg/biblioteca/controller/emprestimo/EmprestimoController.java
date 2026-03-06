@@ -4,6 +4,7 @@ import com.centroweg.weg.biblioteca.dto.emprestimo.EmprestimoRequestDto;
 import com.centroweg.weg.biblioteca.dto.emprestimo.EmprestimoResponseDto;
 import com.centroweg.weg.biblioteca.model.Emprestimo;
 import com.centroweg.weg.biblioteca.service.emprestimo.EmprestimoService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class EmprestimoController {
     }
 
     @PostMapping
-    public EmprestimoResponseDto save (@RequestBody EmprestimoRequestDto emprestimoRequestDto){
+    public EmprestimoResponseDto save (@Valid @RequestBody EmprestimoRequestDto emprestimoRequestDto){
         try{
             return service.salvar(
                     emprestimoRequestDto
@@ -66,7 +67,7 @@ public class EmprestimoController {
     }
 
     @PutMapping("/{id}")
-    public EmprestimoResponseDto updateEmprestimo(@PathVariable int id, @RequestBody EmprestimoRequestDto emprestimoRequestDto){
+    public EmprestimoResponseDto updateEmprestimo(@PathVariable int id, @Valid @RequestBody EmprestimoRequestDto emprestimoRequestDto){
         try{
             return service.atualizar(
                     emprestimoRequestDto,
@@ -78,7 +79,7 @@ public class EmprestimoController {
     }
 
     @PutMapping ("/devolucao/{id}")
-    public void devolver(@PathVariable int id, @RequestBody EmprestimoRequestDto emprestimoRequestDto){
+    public void devolver(@PathVariable int id, @Valid @RequestBody EmprestimoRequestDto emprestimoRequestDto){
         try{
             service.devolver(
                     id,
